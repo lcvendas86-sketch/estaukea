@@ -82,12 +82,12 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
   const fakePosts: Post[] = [
     {
       id: "fake-1",
-      username: "gabriela",
-      userImage: "/attractive-woman-profile.png",
-      postImage: "/images/lessacoelhinha-post.jpg",
-      likes: 2814,
+      username: "jadepicon",
+      userImage: "/images/whatsapp-20image-202026-01-08-20at-2018.jpeg",
+      postImage: "/images/whatsapp-20image-202026-01-08-20at-2018.jpeg",
+      likes: 28100,
       comments: 622,
-      caption: "Bom dia ❤️✨",
+      caption: "O rio de janeiro continua lindo ...",
       date: "há 3 horas",
     },
     {
@@ -102,7 +102,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-3",
-      username: "lashesamka",
+      username: "laisa",
       userImage: "/beautiful-woman-portrait.png",
       postImage: "/eyelash-extensions-close-up.jpg",
       likes: 15,
@@ -112,7 +112,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-4",
-      username: "stasya_estetic",
+      username: "cheila",
       userImage: "/attractive-woman-profile.png",
       postImage: "/beauty-training-certificates.jpg",
       likes: 17,
@@ -122,7 +122,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-5",
-      username: "kizsza",
+      username: "alice",
       userImage: "/blonde-woman-instagram.jpg",
       postImage: "/woman-winter-photo.jpg",
       likes: 23,
@@ -132,7 +132,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-6",
-      username: "rodrigo_silva",
+      username: "rodrigo",
       userImage: "/images/man-mountain-profile.jpg",
       postImage: "/images/copacabana-fireworks.avif",
       likes: 1243,
@@ -142,7 +142,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-7",
-      username: "juliana_travels",
+      username: "julia",
       userImage: "/woman-smiling-photo.jpg",
       postImage: "/images/maldives-couple.png",
       likes: 3542,
@@ -152,7 +152,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
     },
     {
       id: "fake-8",
-      username: "lui*****",
+      username: "luiz",
       userImage: "/images/7b2d50653d-4e1f-468f-a7e2-12f9e2249195-7d.png",
       postImage: "/images/7baf4187f1-b552-4f74-80e0-6623ce4ddd0b-7d.png",
       likes: 892,
@@ -222,7 +222,14 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
   }
 
   if (showMessages) {
-    return <InstagramMessages onBack={() => setShowMessages(false)} username={username} />
+    return (
+      <InstagramMessages
+        onBack={() => setShowMessages(false)}
+        username={username}
+        profilePicUrl={userProfilePic}
+        profileData={fullProfileData}
+      />
+    )
   }
 
   if (showVipPage) {
@@ -349,21 +356,19 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
                       }}
                     />
                   </div>
-                  <span className="font-semibold text-sm">
-                    {index < 2 ? post.username : post.username.substring(0, 3) + "*****"}
-                  </span>
+                  <span className="font-semibold text-sm">{post.username}</span>
                 </div>
                 <MoreVertical className="w-5 h-5" />
               </div>
 
               {/* Post Image */}
-              <div className="relative w-full aspect-square bg-gray-900 overflow-hidden">
+              <div className="relative w-full aspect-[4/5] bg-gray-900 overflow-hidden">
                 <img
                   src={
                     post.postImage.startsWith("http")
                       ? post.postImage.includes("wsrv.nl")
                         ? post.postImage
-                        : `https://wsrv.nl/?url=${encodeURIComponent(post.postImage)}&w=800&h=800&fit=cover`
+                        : `https://wsrv.nl/?url=${encodeURIComponent(post.postImage)}&w=800&h=1000&fit=cover`
                       : post.postImage
                   }
                   alt="Post"
@@ -388,9 +393,7 @@ export function InstagramFeed({ profileData, username }: InstagramFeedProps) {
                 <p className="font-semibold text-sm mb-1">{post.likes} curtidas</p>
 
                 <div className="text-sm leading-tight">
-                  <span className="font-semibold mr-2">
-                    {index < 2 ? post.username : post.username.substring(0, 3) + "*****"}
-                  </span>
+                  <span className="font-semibold mr-2">{post.username}</span>
                   <span className="text-gray-300">{post.caption}</span>
                 </div>
 

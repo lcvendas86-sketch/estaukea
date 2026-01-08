@@ -3,10 +3,15 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, Lock, Key, Check } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { InstagramLoading } from "./instagram-loading"
 import { ProfileConfirmation } from "./profile-confirmation"
 import { InstagramFeed } from "./instagram-feed"
+
+function getDayOfWeek(): string {
+  const days = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"]
+  return days[new Date().getDay()]
+}
 
 export function HeroSection() {
   const [username, setUsername] = useState("")
@@ -15,6 +20,12 @@ export function HeroSection() {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showFeed, setShowFeed] = useState(false)
   const [profileData, setProfileData] = useState<any>(null)
+  const [userProfileData, setUserProfileData] = useState<any>(null)
+  const [currentDay, setCurrentDay] = useState("")
+
+  useEffect(() => {
+    setCurrentDay(getDayOfWeek())
+  }, [])
 
   const handleSpyClick = async () => {
     if (!showInput) {
@@ -26,28 +37,45 @@ export function HeroSection() {
       return
     }
 
-    // Mostrar tela de loading
     setShowLoading(true)
 
-    // Chamar a API do Instagram
     try {
-      const response = await fetch("https://instagram120.p.rapidapi.com/api/instagram/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-rapidapi-host": "instagram120.p.rapidapi.com",
-          "x-rapidapi-key": "42865ce77amsh6b3ec8ac168e4c3p1ae1b6jsndc1ea20ce2d0",
-        },
-        body: JSON.stringify({
-          username: username,
-          maxId: "",
+      const [profileResponse, postsResponse] = await Promise.all([
+        fetch("https://instagram120.p.rapidapi.com/api/instagram/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-rapidapi-host": "instagram120.p.rapidapi.com",
+            "x-rapidapi-key": "42865ce77amsh6b3ec8ac168e4c3p1ae1b6jsndc1ea20ce2d0",
+          },
+          body: JSON.stringify({
+            username: username,
+          }),
         }),
-      })
+        fetch("https://instagram120.p.rapidapi.com/api/instagram/posts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-rapidapi-host": "instagram120.p.rapidapi.com",
+            "x-rapidapi-key": "42865ce77amsh6b3ec8ac168e4c3p1ae1b6jsndc1ea20ce2d0",
+          },
+          body: JSON.stringify({
+            username: username,
+            maxId: "",
+          }),
+        }),
+      ])
 
-      const data = await response.json()
-      setProfileData(data)
+      const profileDataResult = await profileResponse.json()
+      const postsDataResult = await postsResponse.json()
+
+      console.log("[v0] Profile API response:", JSON.stringify(profileDataResult))
+      console.log("[v0] Posts API response:", JSON.stringify(postsDataResult))
+
+      setUserProfileData(profileDataResult)
+      setProfileData(postsDataResult)
     } catch (error) {
-      console.error("API Error:", error)
+      console.error("[v0] API Error:", error)
     }
   }
 
@@ -68,39 +96,38 @@ export function HeroSection() {
   }
 
   if (showFeed && profileData) {
-    const firstPost = profileData.result?.edges?.[0]?.node
-    const ownerData = firstPost?.owner
+    const profile = userProfileData?.result || userProfileData
 
     const enrichedProfileData = {
       ...profileData,
       username: username,
-      fullName: ownerData?.full_name || username,
-      profilePicUrl: ownerData?.profile_pic_url || ownerData?.profile_pic_url_hd || "/placeholder.svg",
-      biography: ownerData?.biography || "",
-      followersCount: ownerData?.follower_count || ownerData?.edge_followed_by?.count || 0,
-      followingCount: ownerData?.following_count || ownerData?.edge_follow?.count || 0,
-      postsCount: profileData.result?.edges?.length || 0,
+      fullName: profile?.full_name || username,
+      profilePicUrl: profile?.profile_pic_url_hd || profile?.profile_pic_url || "/placeholder.svg",
+      biography: profile?.biography || "",
+      followersCount: profile?.follower_count || profile?.edge_followed_by?.count || 0,
+      followingCount: profile?.following_count || profile?.edge_follow?.count || 0,
+      postsCount:
+        profile?.media_count || profile?.edge_owner_to_timeline_media?.count || profileData.result?.edges?.length || 0,
     }
+
+    console.log("[v0] Enriched profile data for feed:", JSON.stringify(enrichedProfileData))
 
     return <InstagramFeed profileData={enrichedProfileData} username={username} />
   }
 
   if (showConfirmation && profileData) {
-    const firstPost = profileData.result?.edges?.[0]?.node
-    const ownerData = firstPost?.owner
+    const profile = userProfileData?.result || userProfileData
 
     return (
       <ProfileConfirmation
         profileData={{
           username: username,
-          fullName: ownerData?.full_name || username,
-          profilePicUrl: ownerData?.profile_pic_url || ownerData?.profile_pic_url_hd || "/placeholder.svg",
-          postsCount: profileData.result?.edges?.length || 40,
-          followersCount: ownerData?.follower_count || 10029,
-          followingCount: ownerData?.following_count || 1122,
-          biography:
-            ownerData?.biography ||
-            "Se você sabe o que vale, Procure o que merece.\n📊📊💻 Marketing Na Gringa.🌎🇺🇸\n💻Infoprodutos\n🔥ADS\n😎'Only Good Vibes👍\n📍MG\n📍🇧🇷",
+          fullName: profile?.full_name || username,
+          profilePicUrl: profile?.profile_pic_url_hd || profile?.profile_pic_url || "/placeholder.svg",
+          postsCount: profile?.media_count || profile?.edge_owner_to_timeline_media?.count || 0,
+          followersCount: profile?.follower_count || profile?.edge_followed_by?.count || 0,
+          followingCount: profile?.following_count || profile?.edge_follow?.count || 0,
+          biography: profile?.biography || "",
         }}
         onCorrect={handleCorrect}
         onConfirm={handleConfirm}
@@ -116,7 +143,6 @@ export function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center px-4 py-20">
       <div className="max-w-2xl w-full">
         <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-3xl p-8 md:p-12">
-          {/* Logo */}
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center border-2 border-purple-400">
@@ -129,12 +155,10 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Título */}
           <h1 className="text-3xl md:text-4xl font-bold text-center text-white mb-6 leading-tight">
             O que seu <span className="text-purple-500">Cônjuge</span> faz quando está no Instagram?
           </h1>
 
-          {/* Subtítulo ou Input */}
           {!showInput ? (
             <p className="text-gray-400 text-center mb-8 text-lg">
               Descubra a verdade sobre <span className="font-semibold text-white">qualquer pessoa</span>, acessando o
@@ -158,7 +182,6 @@ export function HeroSection() {
             </div>
           )}
 
-          {/* Botão Principal */}
           <Button
             onClick={handleSpyClick}
             className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-semibold rounded-2xl mb-8 flex items-center justify-center gap-2"
@@ -167,7 +190,6 @@ export function HeroSection() {
             Espionar Agora
           </Button>
 
-          {/* Badges */}
           <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
             <div className="flex items-center gap-2 text-gray-300 text-sm">
               <Lock className="w-4 h-4 text-purple-500" />
@@ -184,10 +206,10 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Contador */}
         <div className="text-center mt-6">
           <p className="text-gray-400 text-sm">
-            <span className="text-purple-500 font-semibold">+81.716</span> perfis analisados hoje (sexta-feira)
+            <span className="text-purple-500 font-semibold">+81.716</span> perfis analisados hoje ({currentDay || "..."}
+            )
           </p>
         </div>
       </div>

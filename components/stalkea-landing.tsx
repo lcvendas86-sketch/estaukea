@@ -23,6 +23,34 @@ interface StalkeaLandingProps {
 export default function StalkeaLanding({ onBack, username, profileImage, profileData }: StalkeaLandingProps) {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const [timeRemaining, setTimeRemaining] = useState(120)
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
+  const testimonials = [
+    {
+      username: "o__prozind34",
+      image: "/images/1.jpeg",
+      time: "1d",
+      text: "Na versão completa testei com @ do boy e vi um monte de coisa. Localização, fotos escondidas, até conversas apagadas. Foi exatamente como mostrou.",
+    },
+    {
+      username: "maria_silva22",
+      image: "/images/2.jpeg",
+      time: "2d",
+      text: "Gente, eu não acreditava que funcionava até testar. Descobri onde meu ex tava indo todo dia e com quem ele tava conversando. Valeu cada centavo!",
+    },
+    {
+      username: "carlos_mendes",
+      image: "/images/3.jpeg",
+      time: "3h",
+      text: "Achei que era golpe mas resolvi arriscar. Consegui ver até os stories de melhores amigos de uma pessoa. A ferramenta é real e funciona muito bem.",
+    },
+    {
+      username: "ana_beatriz_",
+      image: "/images/4.jpeg",
+      time: "5h",
+      text: "Usei pra descobrir se meu namorado tava sendo honesto comigo. Vi todas as conversas do direct dele. Recomendo demais pra quem tem desconfiança.",
+    },
+  ]
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -31,6 +59,14 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
 
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    const testimonialTimer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    }, 3000)
+
+    return () => clearInterval(testimonialTimer)
+  }, [testimonials.length])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -91,7 +127,7 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
           STALKEA<span className="text-purple-500">.AI</span>
         </h1>
         <p className="text-xl font-bold mb-1">
-          A maior ferramenta de <span className="text-purple-500">Stalker</span> do Brasil
+          A maior ferramenta de <span className="text-purple-500">Stalker</span> de 2026
         </p>
       </div>
 
@@ -158,11 +194,7 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
         </p>
         <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800">
           <div className="h-48 bg-gray-800 relative">
-            <img
-              src="/placeholder.svg?height=200&width=400&text=Mapa"
-              alt="Mapa"
-              className="w-full h-full object-cover opacity-50"
-            />
+            <img src="/images/unnamed.png" alt="Mapa" className="w-full h-full object-cover" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full border-4 border-green-500 overflow-hidden">
                 <img
@@ -263,34 +295,34 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
         </div>
       </div>
 
-      {/* CTA Button */}
-      <div className="mx-4 mb-6">
-        <button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-4 rounded-xl text-lg transition-colors shadow-lg">
-          Acessar tudo agora mesmo
-          <p className="text-sm font-normal mt-1 text-purple-200">Acesso liberado em até 2 minutos</p>
-        </button>
-        <div className="flex items-center justify-center mt-4">
-          <ChevronDown className="w-6 h-6 text-gray-400 animate-bounce" />
-        </div>
-      </div>
-
       {/* Testimonials */}
       <div className="mx-4 mb-6">
         <h2 className="text-xl font-bold mb-4">Veja o que falam as pessoas que usam o Stalkea.ai</h2>
-        <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
+        <div className="bg-gray-900 rounded-xl p-5 border border-gray-800 transition-all duration-500">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-              <span className="text-white font-bold">O</span>
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <img
+                src={testimonials[currentTestimonial].image || "/placeholder.svg"}
+                alt={testimonials[currentTestimonial].username}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <p className="font-semibold">o__prozind34</p>
-              <p className="text-gray-400 text-xs">1d</p>
+              <p className="font-semibold">{testimonials[currentTestimonial].username}</p>
+              <p className="text-gray-400 text-xs">{testimonials[currentTestimonial].time}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-300">
-            Na versão completa testei com @ do boy e vi um monte de coisa. Localização, fotos escondidas, até conversas
-            apagadas. Foi exatamente como mostrou.
-          </p>
+          <p className="text-sm text-gray-300">{testimonials[currentTestimonial].text}</p>
+          <div className="flex justify-center gap-2 mt-4">
+            {testimonials.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentTestimonial ? "bg-purple-500 w-4" : "bg-gray-600"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

@@ -4,12 +4,24 @@ import { ArrowLeft, Plus, Edit3, Lock } from "lucide-react"
 import { useState, useEffect } from "react"
 import StalkeaLanding from "./stalkea-landing"
 
+interface ProfileData {
+  username: string
+  fullName: string
+  profilePicUrl: string
+  biography: string
+  postsCount: number
+  followersCount: number
+  followingCount: number
+}
+
 interface InstagramMessagesProps {
   onBack: () => void
   username: string
+  profilePicUrl?: string
+  profileData?: ProfileData
 }
 
-export default function InstagramMessages({ onBack, username }: InstagramMessagesProps) {
+export default function InstagramMessages({ onBack, username, profilePicUrl, profileData }: InstagramMessagesProps) {
   const [timeRemaining, setTimeRemaining] = useState(586)
   const [showVipPage, setShowVipPage] = useState(false)
 
@@ -27,8 +39,22 @@ export default function InstagramMessages({ onBack, username }: InstagramMessage
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
+  // Prioridade: profileData.profilePicUrl > profilePicUrl > placeholder
+  const rawUserImage = profileData?.profilePicUrl || profilePicUrl || ""
+  const hasValidImage = rawUserImage && rawUserImage !== "/placeholder.svg" && rawUserImage.length > 0
+  const userImage = hasValidImage ? rawUserImage : "/generic-social-media-profile.png"
+
+  // Criar URL com proxy para imagens externas
+  const proxyUserImage = userImage.startsWith("http")
+    ? `https://wsrv.nl/?url=${encodeURIComponent(userImage)}&w=150&h=150&fit=cover`
+    : userImage
+
+  console.log("[v0] InstagramMessages - rawUserImage:", rawUserImage)
+  console.log("[v0] InstagramMessages - hasValidImage:", hasValidImage)
+  console.log("[v0] InstagramMessages - proxyUserImage FINAL:", proxyUserImage)
+
   const stories = [
-    { id: 1, username: "Sua nota", image: "/images/7b2d50653d-4e1f-468f-a7e2-12f9e2249195-7d.png", isOwn: true },
+    { id: 1, username: "Sua nota", image: proxyUserImage, isOwn: true },
     { id: 2, username: "Geo*****", image: "/young-woman-selfie.jpg" },
     { id: 3, username: "Sad*****", image: "/beautiful-woman-portrait.png" },
     { id: 4, username: "Syl*****", image: "/woman-smiling-photo.jpg" },
@@ -177,7 +203,14 @@ export default function InstagramMessages({ onBack, username }: InstagramMessage
   }
 
   if (showVipPage) {
-    return <StalkeaLanding onBack={() => setShowVipPage(false)} username={username} />
+    return (
+      <StalkeaLanding
+        onBack={() => setShowVipPage(false)}
+        username={username}
+        profileImage={profilePicUrl}
+        profileData={profileData}
+      />
+    )
   }
 
   return (
@@ -209,23 +242,34 @@ export default function InstagramMessages({ onBack, username }: InstagramMessage
       {/* Stories Row */}
       <div className="px-4 py-3 border-b border-gray-800">
         <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-          {stories.map((story) => (
-            <div key={story.id} className="flex flex-col items-center flex-shrink-0">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 border-2 border-gray-700 relative">
-                <img
-                  src={story.image || "/placeholder.svg"}
-                  alt={story.username}
-                  className="w-full h-full object-cover"
-                />
-                {story.isOwn && (
-                  <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-black flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">+</span>
-                  </div>
-                )}
+          {stories.map((story) => {
+            console.log(`[v0] Story ${story.id} (${story.username}) - image:`, story.image)
+            return (
+              <div key={story.id} className="flex flex-col items-center flex-shrink-0">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 border-2 border-gray-700 relative">
+                  <img
+                    src={
+                      story.image.startsWith("http")
+                        ? story.image // já está com proxy
+                        : story.image
+                    }
+                    alt={story.username}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.log(`[v0] Story ${story.id} image FAILED to load:`, story.image)
+                      e.currentTarget.src = "/placeholder.svg?height=150&width=150"
+                    }}
+                  />
+                  {story.isOwn && (
+                    <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-black flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">+</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-[10px] mt-1.5 text-gray-300 truncate w-16 text-center">{story.username}</p>
               </div>
-              <p className="text-[10px] mt-1.5 text-gray-300 truncate w-16 text-center">{story.username}</p>
-            </div>
-          ))}
+            )
+          })}
           <div className="flex flex-col items-center flex-shrink-0">
             <div className="w-16 h-16 rounded-full bg-[#262626] flex items-center justify-center text-xs text-gray-400 text-center px-2 leading-tight border-2 border-gray-700">
               <span>O vontd tudo a 3</span>
