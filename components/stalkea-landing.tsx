@@ -28,25 +28,25 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
   const testimonials = [
     {
       username: "o__prozind34",
-      image: "/images/1.jpeg",
+      image: "/images/testimonial-1.jpeg",
       time: "1d",
       text: "Na versão completa testei com @ do boy e vi um monte de coisa. Localização, fotos escondidas, até conversas apagadas. Foi exatamente como mostrou.",
     },
     {
       username: "maria_silva22",
-      image: "/images/2.jpeg",
+      image: "/images/testimonial-2.jpeg",
       time: "2d",
       text: "Gente, eu não acreditava que funcionava até testar. Descobri onde meu ex tava indo todo dia e com quem ele tava conversando. Valeu cada centavo!",
     },
     {
       username: "carlos_mendes",
-      image: "/images/3.jpeg",
+      image: "/images/testimonial-3.jpeg",
       time: "3h",
       text: "Achei que era golpe mas resolvi arriscar. Consegui ver até os stories de melhores amigos de uma pessoa. A ferramenta é real e funciona muito bem.",
     },
     {
       username: "ana_beatriz_",
-      image: "/images/4.jpeg",
+      image: "/images/testimonial-4.jpeg",
       time: "5h",
       text: "Usei pra descobrir se meu namorado tava sendo honesto comigo. Vi todas as conversas do direct dele. Recomendo demais pra quem tem desconfiança.",
     },
@@ -95,12 +95,12 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
   const bioLines = displayBio.split("\n").filter((line) => line.trim())
 
   const lockedImages = [
-    "/images/1.jpeg",
-    "/images/2.jpeg",
-    "/images/3.jpeg",
-    "/images/4.jpeg",
-    "/images/5.jpeg",
-    "/images/6.jpeg",
+    "/images/francielle-fitness-post.jpg",
+    "/images/lessacoelhinha-post.jpg",
+    "/images/francielle-gym-pink.png",
+    "/images/maldives-couple.png",
+    "/images/man-mountain-profile.jpg",
+    "/images/copacabana-fireworks.avif",
   ]
 
   const features = [
@@ -108,7 +108,7 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
     "Todas as fotos sem censura (incluindo apagadas)",
     "Localização em tempo real e locais que esteve",
     `Alerta sempre que ${displayName.split(" ")[0]} interagir com alguém`,
-    "2 bônus surpresa avaliados em R$120,00",
+    "2 bônus surpresa avaliados em $120.00",
   ]
 
   return (
@@ -339,9 +339,9 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
         </div>
 
         <div className="text-center mb-6">
-          <p className="text-gray-400 line-through text-sm">De: R$ 279,90</p>
+          <p className="text-gray-400 line-through text-sm">De: $279.90</p>
           <p className="text-5xl font-bold text-purple-500 mb-2">
-            R$ 37<span className="text-2xl">,00</span>
+            $37<span className="text-2xl">.00</span>
           </p>
           <div className="flex items-center justify-center gap-4 text-xs text-gray-300">
             <div className="flex items-center gap-1">
@@ -457,7 +457,7 @@ export default function StalkeaLanding({ onBack, username, profileImage, profile
       <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[480px] mx-auto bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3 shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-white font-bold text-sm">Acesso VIP por apenas R$ 37,00</p>
+            <p className="text-white font-bold text-sm">Acesso VIP por apenas $37.00</p>
             <p className="text-purple-200 text-xs">Liberado em até {formatTime(timeRemaining)}</p>
           </div>
           <button className="bg-white text-purple-700 font-bold px-6 py-2.5 rounded-full text-sm hover:bg-purple-50 transition-colors shadow-lg">
